@@ -1,21 +1,73 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
-</div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/cli">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
+<h1  class="header__heading">Cocktail Recipes</h1>
+<h2>Please select an option</h2>
 
-<router-outlet></router-outlet>
+<form [formGroup]="form">
+  <mat-radio-group
+    placeholder="Select search type"
+    (change)="setFilter($event)"
+    formControlName="type"
+  >
+    <mat-radio-button color="primary" value="1">Name</mat-radio-button>
+    <mat-radio-button color="primary" value="2">Category</mat-radio-button>
+    <mat-radio-button color="primary" value="3">Ingredients</mat-radio-button>
+  </mat-radio-group>
+  <br /><br/>
+  <mat-form-field class="demo-full-width" *ngIf="selectedFilter == 1">
+    <input
+      (keyup)="fetchAutoSuggestions($event)"
+      formControlName="name"
+      matInput
+      placeholder="Pleas type cocktail Name"
+    />
+  </mat-form-field>
+  <mat-form-field *ngIf="selectedFilter == 2">
+    <mat-select
+      placeholder="Please select Category"
+      formControlName="categorylist"
+      (selectionChange)="fetchAutoSuggestions($event)"
+    >
+      <mat-option
+        [value]="option.strCategory"
+        *ngFor="let option of filterList"
+        >{{ option.strCategory }}</mat-option
+      >
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field *ngIf="selectedFilter == 3">
+    <mat-select
+      placeholder="Please select Ingredient"
+      formControlName="ingredientlist"
+      (selectionChange)="fetchAutoSuggestions($event)"
+    >
+      <mat-option
+        [value]="option.strIngredient1"
+        *ngFor="let option of filterList"
+        >{{ option.strIngredient1 }}</mat-option
+      >
+    </mat-select>
+  </mat-form-field>
+</form>
+<ng-container *ngIf="!loader;else showLoader">
+<div class="mat-elevation-z8" *ngIf="listData && listData.length>0;else notFound">
+  <div *ngIf="selectedFilter == '1'">
+    <app-name
+      *ngIf="listData && listData.length > 0"
+      [nameBaseData]="listData"
+    ></app-name>
+  </div>
+  <div *ngIf="selectedFilter == '2'">
+    <app-category [categoryBaseData]="listData"></app-category>
+  </div>
+  <div *ngIf="selectedFilter == '3'">
+    <app-category [categoryBaseData]="listData"></app-category>
+  </div>
+</div>
+<ng-template #notFound>
+  <div class="drink-search__message" >
+    <p>{{selectedFilter ==2?'Nothing found.Please a category':selectedFilter ==3?'Nothing found.Please select an Ingredient':'No results found' }}</p>
+  </div>
+</ng-template>
+</ng-container>
+<ng-template #showLoader>
+<mat-progress-spinner *ngIf="loader"  mode="indeterminate"></mat-progress-spinner>
+</ng-template>
