@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CocktailService } from './services/cocktail.service';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -8,25 +8,26 @@ import { FormBuilder } from '@angular/forms';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  listData: any;
-  form;
-  selectedFilter = 1;
-  filterList: any;
-  inDebounce: any;
-  loader = true;
+  listData: any; // To Store array of list
+  form: FormGroup;        // Form variable
+  selectedFilter = 1;     // To set the radio button intially
+  filterList: any;        // To Store Filter Dropdown Data
+  inDebounce: any;        // Variable for Debounce
+  loader = true;           // To Show and hide loader
   constructor(
     private cocktail: CocktailService,
     private fb: FormBuilder
 
   ) { }
   ngOnInit() {
+    /* Define Reactive Form */
     this.form = this.fb.group({
       name: ['',],
       type: ['1',],
       categorylist: ['',],
       ingredientlist: ['',]
     });
-    this.fetchAutoSuggestionsApi();
+    this.fetchApiData();
 
   }
 
@@ -38,7 +39,7 @@ export class AppComponent implements OnInit {
       this.getCategoryList(this.selectedFilter);
     }
     if (this.selectedFilter) {
-      this.fetchAutoSuggestionsApi();
+      this.fetchApiData();
     }
   }
 
@@ -53,7 +54,7 @@ export class AppComponent implements OnInit {
     })
   }
 
-
+/*To Call Service layer  */
   getDataBased(params, searchText) {
     this.loader = true;
     this.cocktail.fetchListData(params, searchText).subscribe((res: any) => {
@@ -65,14 +66,14 @@ export class AppComponent implements OnInit {
     })
   }
   // Debounce functionality
-  fetchAutoSuggestions(event) {
+  debounceData() {
     const self = this;
     if (this.inDebounce) {
       clearTimeout(this.inDebounce);
     }
-    this.inDebounce = setTimeout(() => { self.fetchAutoSuggestionsApi(); }, 1000);
+    this.inDebounce = setTimeout(() => { self.fetchApiData(); }, 1000);
   }
-  fetchAutoSuggestionsApi() {
+  fetchApiData() {
     const text = this.form.value.name;
     this.selectedFilter = this.form.value.type;
     const categoryName = this.form.value.categorylist;

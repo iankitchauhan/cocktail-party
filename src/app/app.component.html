@@ -14,17 +14,20 @@
   <br /><br/>
   <mat-form-field class="demo-full-width" *ngIf="selectedFilter == 1">
     <input
-      (keyup)="fetchAutoSuggestions($event)"
+      (keyup)="debounceData($event)"
       formControlName="name"
       matInput
-      placeholder="Pleas type cocktail Name"
+      placeholder="Please
+
+
+      type cocktail Name"
     />
   </mat-form-field>
   <mat-form-field *ngIf="selectedFilter == 2">
     <mat-select
       placeholder="Please select Category"
       formControlName="categorylist"
-      (selectionChange)="fetchAutoSuggestions($event)"
+      (selectionChange)="debounceData($event)"
     >
       <mat-option
         [value]="option.strCategory"
@@ -37,7 +40,7 @@
     <mat-select
       placeholder="Please select Ingredient"
       formControlName="ingredientlist"
-      (selectionChange)="fetchAutoSuggestions($event)"
+      (selectionChange)="debounceData($event)"
     >
       <mat-option
         [value]="option.strIngredient1"
